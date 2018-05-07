@@ -1,24 +1,32 @@
 const yt = require('youtube.get-video-info');
 const express = require('express')
+const ip = require('ip')
 const app = express()
 
 let response;
 
-const requestInterval =
+const requestInterval = yt.retrieve('Ga3maNZ0x0w', function (err, res) {
+    if (err) throw err;
 
-    yt.retrieve('Ga3maNZ0x0w', function (err, res) {
-        if (err) throw err;
+    response = res;
+});
 
-        response = res;
-    });
+app.enable('trust proxy');
 
 app.get('/', (req, res) => {
+
+    const clientIp = req.connection.remoteAddress.replace(new RegExp(':', 'g'), '').replace(new RegExp('f', 'g'), '');
+    const serverIp = ip.address();
+
+    console.log('clientip: '+clientIp)
+    console.log('serverip: '+serverIp);
+
     if (response)
-        res.send(response)
-    else{
+        res.send(response.replace(serverIp, clientIp));
+    else {
         let requestInterval = setInterval(() => {
             if (response) {
-                res.send(response)
+                res.send(response.replace(serverIp, clientIp))
                 clearInterval(requestInterval)
             }
         }, 80)
