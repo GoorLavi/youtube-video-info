@@ -7,8 +7,8 @@ let response;
 
 const requestInterval = yt.retrieve('Ga3maNZ0x0w', function (err, res) {
     if (err) throw err;
-
-    response = res;
+    response = JSON.stringify(res);
+    console.log(response)
 });
 
 app.enable('trust proxy');
@@ -18,15 +18,15 @@ app.get('/', (req, res) => {
     const clientIp = req.connection.remoteAddress.replace(new RegExp(':', 'g'), '').replace(new RegExp('f', 'g'), '');
     const serverIp = ip.address();
 
-    console.log('clientip: '+clientIp)
-    console.log('serverip: '+serverIp);
+    console.log('clientip: ' + clientIp)
+    console.log('serverip: ' + serverIp);
 
     if (response)
-        res.send(response.replace(serverIp, clientIp));
+        res.send(JSON.parse(response.replace(serverIp, clientIp)));
     else {
         let requestInterval = setInterval(() => {
             if (response) {
-                res.send(response.replace(serverIp, clientIp))
+                res.send(JSON.parse(response.replace(serverIp, clientIp)));
                 clearInterval(requestInterval)
             }
         }, 80)
